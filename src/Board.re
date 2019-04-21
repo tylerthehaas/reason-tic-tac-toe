@@ -4,6 +4,7 @@ let text = ReasonReact.string;
 let make = () => {
   let (squares, setSquares) = React.useState(() => Array.make(9, None));
   let (nextPlayer, setNextPlayer) = React.useState(() => "X");
+
   let handleClick = i => {
     setSquares(squares =>
       Array.mapi(
@@ -18,6 +19,7 @@ let make = () => {
       )
     );
   };
+
   let renderSquare = i =>
     <Square
       value={
@@ -31,6 +33,7 @@ let make = () => {
         setNextPlayer(nextPlayer => nextPlayer == "X" ? "O" : "X");
       }}
     />;
+
   <div>
     <div className="status"> {text("Next player: " ++ nextPlayer)} </div>
     <div className="board-row">
