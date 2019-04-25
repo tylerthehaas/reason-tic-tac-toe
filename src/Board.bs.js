@@ -5,10 +5,133 @@ var $$Array = require("bs-platform/lib/js/array.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
+var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Square$ReactHooksTemplate = require("./Square.bs.js");
 
 function text(prim) {
   return prim;
+}
+
+function calculateWinner(squares) {
+  var lines = /* array */[
+    /* :: */[
+      0,
+      /* :: */[
+        1,
+        /* :: */[
+          2,
+          /* [] */0
+        ]
+      ]
+    ],
+    /* :: */[
+      3,
+      /* :: */[
+        4,
+        /* :: */[
+          5,
+          /* [] */0
+        ]
+      ]
+    ],
+    /* :: */[
+      6,
+      /* :: */[
+        7,
+        /* :: */[
+          8,
+          /* [] */0
+        ]
+      ]
+    ],
+    /* :: */[
+      0,
+      /* :: */[
+        3,
+        /* :: */[
+          6,
+          /* [] */0
+        ]
+      ]
+    ],
+    /* :: */[
+      1,
+      /* :: */[
+        4,
+        /* :: */[
+          7,
+          /* [] */0
+        ]
+      ]
+    ],
+    /* :: */[
+      2,
+      /* :: */[
+        5,
+        /* :: */[
+          8,
+          /* [] */0
+        ]
+      ]
+    ],
+    /* :: */[
+      0,
+      /* :: */[
+        4,
+        /* :: */[
+          8,
+          /* [] */0
+        ]
+      ]
+    ],
+    /* :: */[
+      2,
+      /* :: */[
+        4,
+        /* :: */[
+          6,
+          /* [] */0
+        ]
+      ]
+    ]
+  ];
+  var winner = undefined;
+  for(var i = 0; i <= 8; ++i){
+    var exit = 0;
+    var match = Caml_array.caml_array_get(lines, i);
+    if (match) {
+      var match$1 = match[1];
+      if (match$1) {
+        var match$2 = match$1[1];
+        if (match$2 && !match$2[1]) {
+          var a = match[0];
+          if (Caml_array.caml_array_get(squares, a) === Caml_array.caml_array_get(squares, match$1[0]) && Caml_array.caml_array_get(squares, a) === Caml_array.caml_array_get(squares, match$2[0])) {
+            console.log(squares);
+            winner = Caml_array.caml_array_get(squares, a);
+          }
+          
+        } else {
+          exit = 1;
+        }
+      } else {
+        exit = 1;
+      }
+    } else {
+      exit = 1;
+    }
+    if (exit === 1) {
+      throw [
+            Caml_builtin_exceptions.match_failure,
+            /* tuple */[
+              "Board.re",
+              17,
+              8
+            ]
+          ];
+    }
+    
+  }
+  return winner;
 }
 
 function Board(Props) {
@@ -22,21 +145,35 @@ function Board(Props) {
         }));
   var setNextPlayer = match$1[1];
   var nextPlayer = match$1[0];
+  var match$2 = React.useState((function () {
+          return "Next player: " + nextPlayer;
+        }));
+  var setStatus = match$2[1];
   var handleClick = function (i) {
-    return Curry._1(setSquares, (function (squares) {
-                  return $$Array.mapi((function (index, v) {
-                                var match = i === index;
-                                if (match) {
-                                  if (v !== undefined) {
-                                    return undefined;
-                                  } else {
-                                    return nextPlayer;
-                                  }
-                                } else {
-                                  return v;
-                                }
-                              }), squares);
-                }));
+    Curry._1(setSquares, (function (squares) {
+            return $$Array.mapi((function (index, v) {
+                          var match = i === index;
+                          if (match) {
+                            if (v !== undefined) {
+                              return undefined;
+                            } else {
+                              return nextPlayer;
+                            }
+                          } else {
+                            return v;
+                          }
+                        }), squares);
+          }));
+    var winner = calculateWinner(squares);
+    if (winner !== undefined) {
+      var winner$1 = winner;
+      Curry._1(setStatus, (function (_status) {
+              return "Winner: " + winner$1;
+            }));
+      return /* () */0;
+    } else {
+      return /* () */0;
+    }
   };
   var renderSquare = function (i) {
     var match = Caml_array.caml_array_get(squares, i);
@@ -57,7 +194,7 @@ function Board(Props) {
   };
   return React.createElement("div", undefined, React.createElement("div", {
                   className: "status"
-                }, "Next player: " + nextPlayer), React.createElement("div", {
+                }, match$2[0]), React.createElement("div", {
                   className: "board-row"
                 }, renderSquare(0), renderSquare(1), renderSquare(2)), React.createElement("div", {
                   className: "board-row"
@@ -69,5 +206,6 @@ function Board(Props) {
 var make = Board;
 
 exports.text = text;
+exports.calculateWinner = calculateWinner;
 exports.make = make;
 /* react Not a pure module */

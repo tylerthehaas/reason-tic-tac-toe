@@ -1,9 +1,34 @@
 let text = ReasonReact.string;
 
+let calculateWinner = squares => {
+  let lines = [|
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  |];
+
+  let winner = ref(None);
+  for (i in 0 to 8) {
+    let [a, b, c] = lines[i];
+    if (squares[a] === squares[b] && squares[a] === squares[c]) {
+      Js.log(squares);
+      winner := squares[a];
+    };
+  };
+  winner^;
+};
+
 [@react.component]
 let make = () => {
   let (squares, setSquares) = React.useState(() => Array.make(9, None));
   let (nextPlayer, setNextPlayer) = React.useState(() => "X");
+  let (status, setStatus) =
+    React.useState(() => "Next player: " ++ nextPlayer);
 
   let handleClick = i => {
     setSquares(squares =>
@@ -18,6 +43,13 @@ let make = () => {
         squares,
       )
     );
+    let winner = calculateWinner(squares);
+    switch (winner) {
+    | None => ()
+    | Some(winner) =>
+      setStatus(_status => "Winner: " ++ winner);
+      ();
+    };
   };
 
   let renderSquare = i =>
@@ -35,7 +67,7 @@ let make = () => {
     />;
 
   <div>
-    <div className="status"> {text("Next player: " ++ nextPlayer)} </div>
+    <div className="status"> {text(status)} </div>
     <div className="board-row">
       {renderSquare(0)}
       {renderSquare(1)}
