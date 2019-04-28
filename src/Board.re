@@ -13,10 +13,9 @@ let calculateWinner = squares => {
   |];
 
   let winner = ref(None);
-  for (i in 0 to 8) {
+  for (i in 0 to Array.length(lines) - 1) {
     let [a, b, c] = lines[i];
     if (squares[a] === squares[b] && squares[a] === squares[c]) {
-      Js.log(squares);
       winner := squares[a];
     };
   };
@@ -29,6 +28,15 @@ let make = () => {
   let (nextPlayer, setNextPlayer) = React.useState(() => "X");
   let (status, setStatus) =
     React.useState(() => "Next player: " ++ nextPlayer);
+
+  React.useEffect(() => {
+    let winner = calculateWinner(squares);
+    switch (winner) {
+    | None => setStatus(_status => "Next player: " ++ nextPlayer)
+    | Some(winner) => setStatus(_status => "Winner: " ++ winner)
+    };
+    None;
+  });
 
   let handleClick = i => {
     setSquares(squares =>
@@ -43,13 +51,6 @@ let make = () => {
         squares,
       )
     );
-    let winner = calculateWinner(squares);
-    switch (winner) {
-    | None => ()
-    | Some(winner) =>
-      setStatus(_status => "Winner: " ++ winner);
-      ();
-    };
   };
 
   let renderSquare = i =>

@@ -96,7 +96,7 @@ function calculateWinner(squares) {
     ]
   ];
   var winner = undefined;
-  for(var i = 0; i <= 8; ++i){
+  for(var i = 0 ,i_finish = lines.length - 1 | 0; i <= i_finish; ++i){
     var exit = 0;
     var match = Caml_array.caml_array_get(lines, i);
     if (match) {
@@ -106,7 +106,6 @@ function calculateWinner(squares) {
         if (match$2 && !match$2[1]) {
           var a = match[0];
           if (Caml_array.caml_array_get(squares, a) === Caml_array.caml_array_get(squares, match$1[0]) && Caml_array.caml_array_get(squares, a) === Caml_array.caml_array_get(squares, match$2[0])) {
-            console.log(squares);
             winner = Caml_array.caml_array_get(squares, a);
           }
           
@@ -149,31 +148,35 @@ function Board(Props) {
           return "Next player: " + nextPlayer;
         }));
   var setStatus = match$2[1];
+  React.useEffect((function () {
+          var winner = calculateWinner(squares);
+          if (winner !== undefined) {
+            var winner$1 = winner;
+            Curry._1(setStatus, (function (_status) {
+                    return "Winner: " + winner$1;
+                  }));
+          } else {
+            Curry._1(setStatus, (function (_status) {
+                    return "Next player: " + nextPlayer;
+                  }));
+          }
+          return undefined;
+        }));
   var handleClick = function (i) {
-    Curry._1(setSquares, (function (squares) {
-            return $$Array.mapi((function (index, v) {
-                          var match = i === index;
-                          if (match) {
-                            if (v !== undefined) {
-                              return undefined;
-                            } else {
-                              return nextPlayer;
-                            }
-                          } else {
-                            return v;
-                          }
-                        }), squares);
-          }));
-    var winner = calculateWinner(squares);
-    if (winner !== undefined) {
-      var winner$1 = winner;
-      Curry._1(setStatus, (function (_status) {
-              return "Winner: " + winner$1;
-            }));
-      return /* () */0;
-    } else {
-      return /* () */0;
-    }
+    return Curry._1(setSquares, (function (squares) {
+                  return $$Array.mapi((function (index, v) {
+                                var match = i === index;
+                                if (match) {
+                                  if (v !== undefined) {
+                                    return undefined;
+                                  } else {
+                                    return nextPlayer;
+                                  }
+                                } else {
+                                  return v;
+                                }
+                              }), squares);
+                }));
   };
   var renderSquare = function (i) {
     var match = Caml_array.caml_array_get(squares, i);
